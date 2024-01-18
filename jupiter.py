@@ -39,9 +39,11 @@ class Moons:
 
 	def corr_group_and_numerical_factors(self,x_value):
 		#plotting distribution of distances from moon to jupiter
-		sns.displot(data = self.data, x="x_value", col="group")
+		sns.displot(data = self.data, x=x_value, col="group")
+		plt.show()
 
-	def extract_moon_data(self,moon_name):
-		moon_data = self.dataset[self.dataset['moon'] == moon_name]
+	def extract_moon_data(self,moon_names):
+		#
+		moon_data = self.dataset[self.dataset['moon'].isin(moon_names)]
 		return moon_data
 
