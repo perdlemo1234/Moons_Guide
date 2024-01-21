@@ -98,6 +98,7 @@ class Moons:
 		plt.title(f"Time Series Plot of {x_data} by {y_data}")
 		plt.show()
 
+	#Extracting particular moon entries and reusing it as a Pandas DataFrame
 	def extract_moon_data(self,moon_names,db_path):
 		moon_data = self.data[self.data['moon'].isin(moon_names)]
 		print(moon_data)
@@ -106,3 +107,50 @@ class Moons:
 		new_instance.data = moon_data
 
 		return new_instance
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from skllearn.metrics import mean_squared _error
+import matplotlib.pyplot as plt
+import numpy as np
+
+	def linear_regression_model(self,test_size):
+		#Calculate the x-values, y-values
+		self.data['T-squared'] = self.data['period_days']**2
+		self.data['a_cubed'] = self.data['distance_km']**3
+
+		#Give clear variable names to the values
+		X = self.data[['T_squared']]
+		y= self.data['a_cubed']
+
+		#We split the data for training and testing.
+		X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=test_size, random_state=42)
+
+		model = LinearRegression()
+
+		#Train the Model
+		model.fit(X_train, y_train)
+		#Testing the model
+		y_pred = model.predict(X_test)
+
+		#mean-squared-error for the model - how accurate is it?
+		mse = mean_squared_erro(y_test,y_pred)
+
+		#Labels given for the graph
+		plt.scatter(X_test,y_test, color='blue')
+		plt.plot(X_test, y_pred, color="black")
+		plt.title('Linear Regression Model')
+		plt.xlabel('T^2')
+		plt.ylabel('a^3')
+		plt.show()
+
+		#here, we return the model 
+		return model
+
+	def estimate_mass(self,model):
+		G_known = 6.67e-11
+		gradient = model.coef_[0]
+		mass_estimate = (4 * np.pi**2 * gradient) / G_known 
+
+		print(f"Estimated Mass of Jupiter:{mass_estimate}kg")
+
