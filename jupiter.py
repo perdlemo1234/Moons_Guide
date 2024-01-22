@@ -116,7 +116,7 @@ class Moons:
 		return new_instance
 
 	#Regression Model to predict values
-	def linear_regression_model(self,test_size):
+	def linear_regression_model(self,test_size,weight=None):
 		#Convertions
 		self.data['period_seconds'] = self.data['period_days'] *24 *60*60
 		self.data['distance_metres'] = self.data['distance_km'] * 1000
@@ -138,8 +138,12 @@ class Moons:
 		#Linear Regression Model
 		model = LinearRegression()
 
-		#Train the Model
-		model.fit(X_train, y_train)
+		#Train the Model - if there is any sample weights
+		if weight is not None:
+			model.fit(X_train, y_train, sample_weight=weight)
+		else:
+			model.fit(X_train, y_train)
+
 		#Testing the model
 		y_pred = model.predict(X_test)
 
@@ -165,6 +169,14 @@ class Moons:
 
 		#here, we return the model
 		return model
+
+	def calculate_weights(self):
+		norm_mag = (self.data['mag'] - self.data['mag'].min())/(self.data['mag'].max() - self.data['mag'].min())
+		norm_mass = (self.data['mass_kg'] - self.data['mass_kg'].min())/(self.data['mass_kg'].max() - self.data['mass_kg'].min())
+
+		weights = (norm_mag + norm_mass)/ 2.0
+
+		return weights
 
 	#checking difference between predicted and actual values
 	def plot_residuals(self,model):
